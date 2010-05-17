@@ -610,7 +610,7 @@ void ofGstUtils::listDevices(){
 	}
 }
 
-void ofGstUtils::setDeviceID(unsigned id){
+void ofGstUtils::setDeviceID(int id){
 	if(!camData.bInited) get_video_devices(camData);
 	if(camData.webcam_devices.size()>id){
 		deviceID = id;
@@ -943,6 +943,23 @@ void ofGstUtils::play(){
 	setPaused(false);
 }
 
+
+bool ofGstUtils::isPaused(){
+	return bPaused;
+}
+
+bool ofGstUtils::isLoaded(){
+	return bLoaded;
+}
+
+bool ofGstUtils::isPlaying(){
+	return !bPaused && bLoaded;
+}
+
+void ofGstUtils::stop(){
+	setPaused(true);
+}
+
 void ofGstUtils::setPaused(bool _bPause){
 	bPaused = _bPause;
 	//timeLastIdle = ofGetElapsedTimeMillis();
@@ -1122,6 +1139,15 @@ void ofGstUtils::close(){
 		gst_element_set_state(GST_ELEMENT(gstPipeline), GST_STATE_NULL);
 		//gst_object_unref(gstSink);
 		gst_object_unref(gstPipeline);
+		if(pixels){
+			delete[] pixels;
+			pixels = NULL;
+		}
+		if(gstData.pixels){
+			delete[] gstData.pixels;
+			gstData.pixels = NULL;
+		}
+
 	}
 
 	bLoaded = false;

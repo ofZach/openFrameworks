@@ -4,8 +4,9 @@
 #include <gst/gst.h>
 #include <pthread.h>
 #include "ofConstants.h"
+#include "ofVideoAPIS.h"
 
-typedef struct{
+struct ofGstVideoData{
 	GMainLoop 		*	loop;
 	GstElement 		*	pipeline;
 	unsigned char 	*	pixels;				// 24 bit: rgb
@@ -20,39 +21,37 @@ typedef struct{
 	float				speed;
 
 	guint64				lastFrame;
-}ofGstVideoData;
+};
 
-typedef struct
-{
+
+struct ofGstFramerate{
   int numerator;
   int denominator;
-} ofGstFramerate;
+};
 
-typedef struct
-{
+struct ofGstVideoFormat{
   string mimetype;
   int    width;
   int    height;
   vector<ofGstFramerate> framerates;
   ofGstFramerate choosen_framerate;
-} ofGstVideoFormat;
+};
 
-typedef struct
-{
+struct ofGstDevice{
   string video_device;
   string gstreamer_src;
   string product_name;
   vector<ofGstVideoFormat> video_formats;
   int current_format;
-} ofGstDevice;
+};
 
-typedef struct
+struct ofGstCamData
 {
   vector<ofGstDevice> webcam_devices;
   bool bInited;
-} ofGstCamData;
+};
 
-class ofGstUtils {
+class ofGstUtils: public ofVideoGrabberAPI, public ofVideoPlayerAPI {
 public:
 	ofGstUtils();
 	virtual ~ofGstUtils();
@@ -60,7 +59,7 @@ public:
 	bool loadMovie(string uri);
 
 	void listDevices();
-	void setDeviceID(unsigned id);
+	void setDeviceID(int id);
 	bool initGrabber(int w, int h, int framerate=-1);
 
 	bool setPipeline(string pipeline, int bpp=24, bool isStream=false, int w=-1, int h=-1);
@@ -71,6 +70,7 @@ public:
 	void update();
 
 	void play();
+	void stop();
 	void setPaused(bool bPause);
 
 	int	getCurrentFrame();
@@ -88,6 +88,10 @@ public:
 	float getDuration();
 	bool  getIsMovieDone();
 
+	bool isPaused();
+	bool isLoaded();
+	bool isPlaying();
+
 	void setPosition(float pct);
 	void setVolume(int volume);
 	void setLoopState(int state);
@@ -97,6 +101,7 @@ public:
 	void setFrameByFrame(bool bFrameByFrame);
 
 	void close();
+	void videoSettings(){};
 
 protected:
 	void                seek_lock();
@@ -151,5 +156,6 @@ protected:
 	int					deviceID;
 
 };
+
 
 #endif /* OFGSTUTILS_H_ */

@@ -54,6 +54,127 @@ void            MovieGetStaticFrameRate(Movie inMovie, double *outStaticFrameRat
 	OSErr	SaveSettingsPreference(CFStringRef inKey, UserData inUserData);
 #endif
 
+
+
+class ofQTGrabberAPI: public ofVideoGrabberAPI{
+
+	ofQTGrabberAPI();
+	virtual ~ofQTGrabberAPI();
+
+	void 			listDevices();
+	bool 			isFrameNew();
+	void			close();
+	bool			initGrabber(int w, int h, int framerate=-1);
+	void			videoSettings();
+	unsigned char 	* getPixels();
+	void			setDeviceID(int _deviceID);
+	void			update();
+
+	int 			getHeight();
+	int 			getWidth();
+
+	//--------------------------------------------------------------------
+	#ifdef TARGET_OSX
+	//--------------------------------------------------------------------
+
+	bool					saveSettings();
+	bool					loadSettings();
+
+	//--------------------------------------------------------------------
+	#endif
+	//--------------------------------------------------------------------
+
+protected:
+	unsigned char *		pixels;
+	unsigned char * 	offscreenGWorldPixels;	// 32 bit: argb (qt k32ARGBPixelFormat)
+	int 				w,h;
+	int 				width, height;
+	int					deviceID;
+	bool 				bHavePixelsChanged;
+	GWorldPtr 			videogworld;
+	SeqGrabComponent	gSeqGrabber;
+	SGChannel 			gVideoChannel;
+	Rect				videoRect;
+	bool 				bSgInited;
+	string				deviceName;
+	SGGrabCompleteBottleUPP	myGrabCompleteProc;
+
+	bool				qtInitSeqGrabber();
+	bool				qtCloseSeqGrabber();
+	bool				qtSelectDevice(int deviceNumber, bool didWeChooseADevice);
+};
+
+
+
+class ofQTPlayerAPI{
+public:
+	ofQTPlayerAPI(){};
+	virtual ~ofQTPlayerAPI(){};
+
+	bool 			isFrameNew()=0;
+	void			close()=0;
+	bool			loadMovie(string name)=0;
+
+	void			play();
+	void			stop();
+
+	void			update()=0;
+
+	float			getPosition()=0;
+	float			getSpeed()=0;
+	float			getDuration()=0;
+	bool			getIsMovieDone()=0;
+	int				getCurrentFrame()=0;
+	int				getTotalNumFrames()=0;
+
+	void			setPosition(float pct)=0;
+	void			setVolume(int volume)=0;
+	void			setLoopState(int state)=0;
+	void			setSpeed(float speed)=0;
+	void			setFrame(int frame)=0;  // frame 0 = first frame...
+	void			setPaused(bool bPause)=0;
+
+	bool			isPaused()=0;
+	bool			isLoaded()=0;
+	bool			isPlaying()=0;
+
+	void			firstFrame()=0;
+	void			nextFrame()=0;
+	void			previousFrame()=0;
+
+	unsigned char * getPixels()=0;
+
+	int 			getHeight()=0;
+	int 			getWidth()=0;
+
+
+
+
+	MovieDrawingCompleteUPP myDrawCompleteProc;
+	MovieController  	thePlayer;
+	GWorldPtr 			offscreenGWorld;
+	Movie 			 	moviePtr;
+	unsigned char * 	offscreenGWorldPixels;	// 32 bit: argb (qt k32ARGBPixelFormat)
+	void				qtGetFrameCount(Movie & movForcount);
+
+protected:
+	bool 				bStarted;
+	bool 				bPlaying;
+	bool 				bPaused;
+	bool 				bIsFrameNew;			// if we are new
+
+
+	int					nFrames;				// number of frames
+	unsigned char * 	pixels;					// 24 bit: rgb
+	bool 				bHavePixelsChanged;
+	bool				allocated;				// so we know to free pixels or not
+	float  				speed;
+	bool 				bLoaded;
+
+	void 				start();
+	void 				createImgMemAndGWorld();
+};
+
 #endif
 
 #endif

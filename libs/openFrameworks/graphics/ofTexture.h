@@ -4,8 +4,15 @@
 #include "ofConstants.h"
 #include "ofGraphics.h"
 
+//Sosolimited: texture compression
+enum ofTexCompression
+{
+	OF_COMPRESS_NONE,
+	OF_COMPRESS_SRGB,
+	OF_COMPRESS_ARB
+};
 
-typedef struct{
+struct ofTextureData{
 
 	bool bAllocated;
 	int glType;
@@ -21,8 +28,14 @@ typedef struct{
 	bool bFlipTexture;
 	unsigned int textureID;
 
+	//Sosolimited: texture compression
+	ofTexCompression compressionType;
+	bool useCompression;
+
+	//reference count
+	int references;
 		
-}ofTextureData;
+};
 
 //enable / disable the slight offset we add to ofTexture's texture coords to compensate for bad edge artifiacts
 //enabled by default
@@ -77,6 +90,8 @@ class ofTexture : public ofBaseDraws{
 	void setTextureWrap(GLint wrapModeHorizontal, GLint wrapModeVertical);
 	void setTextureMinMagFilter(GLint minFilter, GLint maxFilter);
 
+	void setCompression(ofTexCompression compression);
+
 	bool bAllocated();
 
 	ofTextureData getTextureData();
@@ -84,10 +99,10 @@ class ofTexture : public ofBaseDraws{
 	float getHeight();
 	float getWidth();
 
-	ofTextureData texData;
 protected:
 	void loadData(void * data, int w, int h, int glDataType);
 
+	ofTextureData * texData;
 	ofPoint anchor;
 	bool bAnchorIsPct;
 

@@ -129,7 +129,9 @@ void ofDisableDataPath(){
 
 
 //use ofSetDataPathRoot() to override this
-#if defined TARGET_OSX
+#if defined OF_ECLIPSE
+	static string dataPathRoot = "bin/data/";
+#elif defined TARGET_OSX
 	static string dataPathRoot = "../../../data/";
 #else
 	static string dataPathRoot = "data/";

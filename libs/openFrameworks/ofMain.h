@@ -30,7 +30,7 @@
 //--------------------------
 // audio
 #include "ofSoundStream.h"
-#include "ofSoundPlayer.h"
+//#include "ofSoundPlayer.h"
 
 //--------------------------
 // video

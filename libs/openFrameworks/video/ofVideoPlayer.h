@@ -3,16 +3,7 @@
 
 #include "ofConstants.h"
 #include "ofTexture.h"
-
-
-#ifdef OF_VIDEO_PLAYER_GSTREAMER
-	#include "ofGstUtils.h"
-#else
-	#include "ofQtUtils.h"
-#endif
-
-
-
+#include "ofVideoAPIS.h"
 
 
 //---------------------------------------------
@@ -21,9 +12,10 @@ class ofVideoPlayer : public ofBaseVideo{
 
 	public:
 
-
 		ofVideoPlayer ();
 		virtual ~ofVideoPlayer();
+
+		void 				setPlayerAPI(ofVideoPlayerAPI * _api);
 
 		bool 				loadMovie(string name);
 		void 				closeMovie();
@@ -35,8 +27,6 @@ class ofVideoPlayer : public ofBaseVideo{
 		void 				stop();
 
 		int 				width, height;
-		float  				speed;
-		bool 				bLoaded;
 
 		bool 				isFrameNew();
 		unsigned char * 	getPixels();
@@ -74,46 +64,17 @@ class ofVideoPlayer : public ofBaseVideo{
 		float 				getHeight();
 		float 				getWidth();
 
-		//--------------------------------------
-		#ifdef OF_VIDEO_PLAYER_QUICKTIME
-		//--------------------------------------
-			MovieDrawingCompleteUPP myDrawCompleteProc;
-			MovieController  	thePlayer;
-			GWorldPtr 			offscreenGWorld;
-			Movie 			 	moviePtr;
-			unsigned char * 	offscreenGWorldPixels;	// 32 bit: argb (qt k32ARGBPixelFormat)
-			void				qtGetFrameCount(Movie & movForcount);
-		//--------------------------------------
-		#endif
-		//--------------------------------------
+		bool				isPaused();
+		bool				isLoaded();
+		bool				isPlaying();
 
-		//--------------------------------------
-		#ifdef OF_VIDEO_PLAYER_GSTREAMER
-		//--------------------------------------
-		ofGstUtils 			gstUtils;
-		//--------------------------------------
-		#endif
-		//--------------------------------------
-
-		int					nFrames;				// number of frames
-		unsigned char * 	pixels;					// 24 bit: rgb
-		bool 				bHavePixelsChanged;
-		ofTexture 			tex;					// a ptr to the texture we are utilizing
-		bool 				bUseTexture;			// are we using a texture
-		bool				allocated;				// so we know to free pixels or not
+		ofVideoPlayerAPI *  getPlayerAPI();
 
 	protected:
+		ofTexture 			tex;					// a ptr to the texture we are utilizing
+		bool 				bUseTexture;			// are we using a texture
 
-
-		void 				start();
-		void 				createImgMemAndGWorld();
-		bool 				bStarted;
-		bool 				bPlaying;
-		bool 				bPaused;
-		bool 				bIsFrameNew;			// if we are new
-
-
-
+		ofVideoPlayerAPI *	api;
 
 };
 #endif
