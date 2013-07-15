@@ -7,11 +7,11 @@
 //========================================================================
 int main(  int argc, char *argv[]  ){
 
-   
+
     cout << "In main." << endl;
-    
+
     cout << "ofGetTargetPlatform=" << ofGetTargetPlatform() << endl;
-    
+
 #ifdef TARGET_LINUX
 	if(argc==1){
 		ofAppGlutWindow window;
@@ -93,15 +93,15 @@ int main(  int argc, char *argv[]  ){
 			app->targetsToMake.push_back( ofGetTargetPlatform() );
 		ofRunApp( app );
 	}
-#else 
+#else
     cout << "IN HERE!!" << endl;
-    ofAppGlutWindow window;
-    ofSetupOpenGL(&window, 1024,768, OF_WINDOW);
+    //ofAppGlutWindow window;
+    ofSetupOpenGL(1024,768, OF_WINDOW);
     testApp * app = new testApp;
     app->buildAllExamples = false;
     ofRunApp( app );
-    
+
 #endif
-    
-    
+
+
 }
